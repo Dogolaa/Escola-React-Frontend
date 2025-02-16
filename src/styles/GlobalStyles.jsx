@@ -27,6 +27,11 @@ export default createGlobalStyle`
         padding: 10px 20px;
         border-radius: 4px;
         font-weight: 700;
+        transition: all 300ms;
+    }
+
+    button:hover{
+        filter: brightness(75%)
     }
 
     a{
@@ -39,11 +44,13 @@ export default createGlobalStyle`
     }
 
     body .Toastify .Toastify__toast-container .Toastify__toast--success{
-        background: ${colors.successColor}
+        background: ${colors.successColor};
+        color: white
     }
 
     body .Toastify .Toastify__toast-container .Toastify__toast--error{
-        background: ${colors.errorColor}
+        background: ${colors.errorColor};
+        color: white
     }
 
     `;
