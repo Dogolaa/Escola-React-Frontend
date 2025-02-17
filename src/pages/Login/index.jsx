@@ -8,6 +8,7 @@ import get from 'lodash/get';
 import { Container } from '../../styles/GlobalStyles';
 import { Form } from './styled';
 import * as actions from '../../store/modules/auth/actions';
+import Loading from '../../components/Loading';
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -15,6 +16,9 @@ export default function Login() {
   const location = useLocation();
 
   const prevPath = get(location, 'state.prevPath', '/');
+
+  const isLoading = useSelector((state) => state.auth.isLoading);
+
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // Obtém status do login
 
   const [email, setEmail] = useState('');
@@ -54,6 +58,7 @@ export default function Login() {
 
   return (
     <Container>
+      <Loading isLoading={isLoading} />
       <h1>Login</h1>
 
       <Form onSubmit={handleSubmit}>
