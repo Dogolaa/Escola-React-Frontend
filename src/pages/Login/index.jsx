@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { isEmail } from 'validator';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+import get from 'lodash/get';
 
 import { Container } from '../../styles/GlobalStyles';
 import { Form } from './styled';
@@ -9,9 +11,20 @@ import * as actions from '../../store/modules/auth/actions';
 
 export default function Login() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const prevPath = get(location, 'state.prevPath', '/');
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // Obtém status do login
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate(prevPath, { replace: true }); // Redireciona somente após o login
+    }
+  }, [isLoggedIn, navigate, prevPath]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,11 +41,15 @@ export default function Login() {
       toast.error('Senha inválida');
     }
 
-    if (formErrors) {
-      return;
-    }
+    if (formErrors) return;
 
-    dispatch(actions.loginRequest({ email, password }));
+    dispatch(
+      actions.loginRequest({
+        email,
+        password,
+        prevPath, // Agora apenas enviamos prevPath, sem navigate
+      }),
+    );
   };
 
   return (
