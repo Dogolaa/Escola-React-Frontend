@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { isEmail } from 'validator';
-import { get } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Container } from '../../styles/GlobalStyles';
 import { Form } from './styled';
-import axios from '../../services/axios';
 import Loading from '../../components/Loading';
 import * as actions from '../../store/modules/auth/actions';
 
@@ -50,11 +48,15 @@ export default function Register() {
       toast.error('Senha deve ter entre 6 e 50 caracteres');
     }
 
-    if (formErrors) {
-      return;
-    }
+    if (formErrors) return;
 
-    dispatch(actions.registerRequest({ nome, email, password, id }));
+    console.log('🔹 Disparando REGISTER_REQUEST com:', { nome, email, password, id });
+
+    dispatch(actions.registerRequest({ nome, email, password, id }, navigate));
+
+    setTimeout(() => {
+      navigate('/login');
+    }, 100);
   }
 
   return (

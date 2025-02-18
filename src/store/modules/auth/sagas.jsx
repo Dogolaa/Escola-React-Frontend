@@ -4,6 +4,9 @@ import { get } from 'lodash';
 import * as actions from './actions';
 import * as types from '../types';
 import axios from '../../../services/axios';
+import { createBrowserHistory } from 'history';
+
+const history = createBrowserHistory();
 
 function* loginRequest({ payload }) {
   try {
@@ -29,9 +32,47 @@ function persistRehydrate({ payload }) {
   axios.defaults.headers.Authorization = `Bearer ${token}`;
 }
 
-function registerRequest({ payload }) {
+function* registerRequest({ payload }) {
   const { id, nome, email, password } = payload;
-  console.log(payload);
+
+  try {
+    if (id) {
+      yield call(axios.put, '/users', { email, nome, password: password || undefined });
+
+      toast.success('Conta alterada com sucesso!');
+      yield put(actions.registerUpdatedSuccess({ nome, email, password }));
+
+      if (password) {
+        toast.info('Por segurança, faça login novamente.');
+        yield put(actions.loginFailure());
+        history.push('/login');
+      }
+    } else {
+      yield call(axios.post, '/users', { email, nome, password });
+
+      toast.success('Conta criada com sucesso!');
+      yield put(actions.registerCreatedSuccess({ nome, email, password }));
+
+      history.push('/login');
+    }
+  } catch (e) {
+    const errors = get(e, 'response.data.errors', []);
+    const status = get(e, 'response.status', 0);
+
+    if (status === 401) {
+      toast.error('Sessão expirada. Faça login novamente.');
+      yield put(actions.loginFailure());
+      history.push('/login');
+      return;
+    }
+
+    if (errors.length > 0) {
+      errors.map((error) => toast.error(error));
+    } else {
+      toast.error('Erro desconhecido.');
+    }
+    yield put(actions.registerFailure());
+  }
 }
 
 export default all([
