@@ -50,8 +50,6 @@ export default function Register() {
 
     if (formErrors) return;
 
-    console.log('🔹 Disparando REGISTER_REQUEST com:', { nome, email, password, id });
-
     dispatch(actions.registerRequest({ nome, email, password, id }, navigate));
 
     setTimeout(() => {

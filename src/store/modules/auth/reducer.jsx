@@ -19,8 +19,13 @@ export default function (state = initialState, action) {
       return newState;
     }
     case types.LOGIN_FAILURE: {
-      const newState = { ...initialState };
-      return newState;
+      return {
+        ...state,
+        isLoggedIn: false,
+        token: false,
+        user: {},
+        isLoading: false,
+      };
     }
     case types.LOGIN_REQUEST: {
       const newState = { ...state };
@@ -33,8 +38,6 @@ export default function (state = initialState, action) {
       return newState;
     }
     case types.REGISTER_UPDATED_SUCCESS: {
-      console.log('🔄 Reducer: Atualizando estado do usuário...');
-
       return {
         ...state,
         user: {
